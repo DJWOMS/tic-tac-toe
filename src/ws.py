@@ -6,8 +6,21 @@ from starlette.websockets import WebSocket
 from .game import Game
 
 
-class WSGame(WebSocketEndpoint):
+class WebSocketActions(WebSocketEndpoint):
     encoding = 'json'
+    actions = []
+    async def actions_not_allowed(self, websocket: WebSocket, data: typing.Any):
+        await websocket.send_json({'action': 'Not found'})
+
+    async def on_receive(self, websocket: WebSocket, data: typing.Any) -> None:
+        if data['action'] in self.actions:
+            handler = getattr(self, data['action'], self.actions_not_allowed)
+        else:
+            handler = self.actions_not_allowed
+        return await handler(websocket, data)
+
+
+class WSGame(WebSocketActions):
     actions = ['create', 'join', 'new', 'close', 'move']
     users = []
     games = []
@@ -71,75 +84,69 @@ class WSGame(WebSocketEndpoint):
         await self.add_user(websocket)
         await websocket.accept()
 
-    async def on_receive(self, websocket: WebSocket, data: typing.Any) -> None:
-        if data['action'] in self.actions:
-            if data['action'] == 'new':
-                await websocket.send_json({'action': 'new', 'games': len(self.games)})
+    async def new(self, websocket: WebSocket, data: typing.Any):
+        await websocket.send_json({'action': 'new', 'games': len(self.games)})
 
-            elif data['action'] == 'create':
-                game = await self.create_game(websocket)
-                await websocket.send_json(
-                    {'action': 'create', 'player': await game.player_1.get_state()}
-                )
-                await self.delete_user(websocket)
-                print('games', self.games)
-                for ws in self.users:
-                    await ws.send_json({'action': 'new', 'games': len(self.games)})
+    async def create(self, websocket: WebSocket, data: typing.Any):
+        game = await self.create_game(websocket)
+        await websocket.send_json(
+            {'action': 'create', 'player': await game.player_1.get_state()}
+        )
+        await self.delete_user(websocket)
+        for ws in self.users:
+            await ws.send_json({'action': 'new', 'games': len(self.games)})
 
-            elif data['action'] == 'join':
-                game = await self.join_game(websocket, int(data['game']))
-                await self.delete_user(websocket)
-                await websocket.send_json(
-                    {
-                        'action': 'join',
-                        'other_player': await game.player_1.get_state(),
-                        'player': await game.player_2.get_state(),
-                        'move': False
-                    }
-                )
-                ws = await game.player_1.get_ws()
-                await ws.send_json(
-                    {
-                        'action': 'join',
-                        'other_player': await game.player_2.get_state(),
-                        'player': await game.player_1.get_state(),
-                        'move': True
-                    }
-                )
+    async def join(self, websocket: WebSocket, data: typing.Any):
+        game = await self.join_game(websocket, int(data['game']))
+        await self.delete_user(websocket)
+        await websocket.send_json(
+            {
+                'action': 'join',
+                'other_player': await game.player_1.get_state(),
+                'player': await game.player_2.get_state(),
+                'move': False
+            }
+        )
+        ws = await game.player_1.get_ws()
+        await ws.send_json(
+            {
+                'action': 'join',
+                'other_player': await game.player_2.get_state(),
+                'player': await game.player_1.get_state(),
+                'move': True
+            }
+        )
 
-                for ws in self.users:
-                    await ws.send_json({'action': 'new', 'games': len(self.games)})
+        for ws in self.users:
+            await ws.send_json({'action': 'new', 'games': len(self.games)})
 
-            elif data['action'] == 'move':
-                state, message, ws1, ws2 = await self.move_game(websocket, data['cell'])
-                await ws1.send_json(
-                    {
-                        'action': 'move',
-                        'cell': data['cell'],
-                        'move': True if websocket != ws1 else False,
-                        'state': state,
-                        'message': message
-                    }
-                )
-                await ws2.send_json(
-                    {
-                        'action': 'move',
-                        'cell': data['cell'],
-                        'move': True if websocket != ws2 else False,
-                        'state': state,
-                        'message': message
-                    }
-                )
+    async def move(self, websocket: WebSocket, data: typing.Any):
+        state, message, ws1, ws2 = await self.move_game(websocket, data['cell'])
+        await ws1.send_json(
+            {
+                'action': 'move',
+                'cell': data['cell'],
+                'move': True if websocket != ws1 else False,
+                'state': state,
+                'message': message
+            }
+        )
+        await ws2.send_json(
+            {
+                'action': 'move',
+                'cell': data['cell'],
+                'move': True if websocket != ws2 else False,
+                'state': state,
+                'message': message
+            }
+        )
 
-            elif data['action'] == 'close':
-                await self.add_user(websocket)
-                players_ws = await self.delete_game(websocket)
-                for ws in players_ws:
-                    if ws is not None:
-                        await ws.send_json({'action': 'new', 'games': len(self.games)})
-
-        else:
-            await websocket.send_json({'action': 'not found'})
+    async def close(self, websocket: WebSocket, data: typing.Any):
+        await self.add_user(websocket)
+        players_ws = await self.delete_game(websocket)
+        for ws in players_ws:
+            if ws is not None:
+                await ws.send_json({'action': 'new', 'games': len(self.games)})
 
     async def on_disconnect(self, websocket: WebSocket, close_code: int) -> None:
         pass
