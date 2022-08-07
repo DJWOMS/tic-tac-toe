@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="/static/style.css">
+  <title>Tic tac toe</title>
+</head>
+<body>
+<div id="game">
+  <h1>Tic tac toe</h1>
+  <h4>Создать новую игру</h4>
+  <button id="create-game">Создать</button>
+
+  <h4>Список игр</h4>
+  <ul id="gameList"></ul>
+</div>
+
+<h4 id="player" class="game-off"></h4>
+
+<section id="tic-tac-toe" class="game-off">
+  <div class="container">
+    <div data-cell-index="0" class="cell"></div>
+    <div data-cell-index="1" class="cell"></div>
+    <div data-cell-index="2" class="cell"></div>
+    <div data-cell-index="3" class="cell"></div>
+    <div data-cell-index="4" class="cell"></div>
+    <div data-cell-index="5" class="cell"></div>
+    <div data-cell-index="6" class="cell"></div>
+    <div data-cell-index="7" class="cell"></div>
+    <div data-cell-index="8" class="cell"></div>
+  </div>
+  <h4 class="game-status"></h4>
+  <button id="close-game">Выйти из игры</button>
+</section>
+
+
+<script src="/static/script.js"></script>
+</body>
+</html>
