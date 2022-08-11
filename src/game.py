@@ -1,3 +1,4 @@
+from typing import List, Tuple
 from starlette.websockets import WebSocket
 
 
@@ -19,7 +20,7 @@ class Player:
 
 class Game:
 
-    winning_conditions = (
+    winning_conditions: Tuple[tuple] = (
         (0, 1, 2),
         (3, 4, 5),
         (6, 7, 8),
@@ -29,20 +30,26 @@ class Game:
         (0, 4, 8),
         (2, 4, 6)
     )
-    game_state = ["", "", "", "", "", "", "", "", ""]
+    game_state: List[str] = ["", "", "", "", "", "", "", "", ""]
 
-    player_1 = None
-    player_2 = None
-    current_player = ''
-    active_game = False
+    __number: int = 0
+    player_1: Player = None
+    player_2: Player = None
+    current_player: str = ''
+    active_game: bool = False
 
     @classmethod
-    async def create(cls, ws: WebSocket):
+    async def create(cls, ws: WebSocket, number: int):
         self = cls()
+        self.__number = number
         player = await self.create_player(ws)
         self.player_1 = player
         self.current_player = await player.get_state()
         return self
+
+    @property
+    def number(self):
+        return self.__number
 
     async def create_player(self, ws: WebSocket):
         return Player(ws, 'X')
@@ -54,9 +61,12 @@ class Game:
             self.active_game = True
 
     async def check_player_ws(self, ws: WebSocket) -> bool:
-        if await self.player_1.check_ws(ws) or await self.player_2.check_ws(ws):
-            return True
-        return False
+        is_ws = False
+        if self.player_1 is not None:
+            is_ws = await self.player_1.check_ws(ws)
+        if not is_ws and self.player_2 is not None:
+            is_ws = await self.player_2.check_ws(ws)
+        return is_ws
 
     async def result_validation(self) -> str:
         won = False
