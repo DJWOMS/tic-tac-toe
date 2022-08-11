@@ -1,12 +1,13 @@
 const ws = new WebSocket('ws://localhost:8000/ws')
-let iPlayer
+
+let gameNumber = 0
+let iPlayer = ''
 let otherPlayer
 let activeGame = false
 let gameState = ["", "", "", "", "", "", "", "", ""]
 
 
 ws.onopen = function (event) {
-    console.log(event)
     newUser()
 }
 
@@ -18,14 +19,17 @@ ws.onmessage = function (event) {
         case 'new':
             gameList(data.games)
             break
-        case 'join':
-            startGame(data.action, data.player, data.other_player, data.move)
-            break
         case 'create':
-            createdGame(data.player)
+            createdGame(data.number, data.player)
+            break
+        case 'join':
+            startGame(data.number, data.player, data.other_player, data.move)
             break
         case 'move':
             moveGame(data.cell, data.move, data.state, data.message)
+            break
+        case 'close':
+            closeGame(data.games)
             break
         default:
             break
@@ -43,13 +47,15 @@ function newUser() {
 }
 
 
-function createGame(event) {
+function createGame() {
     send({action: 'create'})
 }
 
 
-function createdGame(state) {
+function createdGame(number, state) {
     iPlayer = state
+    gameNumber = number
+    console.log(iPlayer, gameNumber)
     newGame()
 }
 
@@ -60,10 +66,11 @@ function joinGame(event) {
 }
 
 
-function startGame(action, player, other_player, move) {
+function startGame(number, player, other_player, move) {
     iPlayer = player
     otherPlayer = other_player
     activeGame = move
+    gameNumber = number
     newGame()
 }
 
@@ -79,28 +86,26 @@ function moveGame(cellIndex, move, state, message) {
 
     cellClicked.innerHTML = state
     gameState[cellIndex] = state
-
-
 }
 
 
 function gameList(game) {
-    showListGames()
     let i = 0
     if (game === 0) {
-        // let gameList = document.getElementById('gameList')
-        // let ch = gameList.lastElementChild
-        // console.log(ch, typeof ch)
-        // gameList.removeChild(ch)
-        return
+        let gameList = document.getElementById('gameList')
+        let ch = gameList.lastElementChild
+        if (ch) {
+            gameList.removeChild(ch)
+            return
+        }
     }
 
     while (i < game) {
         let gameList = document.getElementById('gameList')
         let li = document.createElement('li')
-        let text = document.createTextNode(`${i}`)
+        let text = document.createTextNode(`${i + 1} `)
         let btn = document.createElement('button')
-        btn.id = `${i + 1}`
+        btn.id = `${i}`
         btn.innerHTML = 'Подключиться'
         btn.addEventListener('click', joinGame)
         li.appendChild(text)
@@ -123,7 +128,9 @@ function clickCell(event) {
     cell.innerHTML = iPlayer
 
     activeGame = false
-    send({action: 'move', 'cell': cellIndex})
+    let data = {action: 'move', number: gameNumber, 'cell': cellIndex}
+    console.log('data', data)
+    send(data)
 }
 
 
@@ -150,14 +157,16 @@ function showListGames() {
 
 
 function closeGame() {
+    showListGames()
     send({action: 'close'})
 }
 
+
 document.getElementById('create-game').addEventListener('click', createGame)
 document.getElementById('close-game').addEventListener('click', closeGame)
-
-document.querySelectorAll('.cell').forEach(cell => cell.addEventListener('click', clickCell))
-
+document.querySelectorAll('.cell').forEach(
+    cell => cell.addEventListener('click', clickCell)
+)
 
 
 
