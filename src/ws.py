@@ -48,8 +48,9 @@ class WSGame(WebSocketBroadcast):
     async def move_game(self, ws: WebSocket, cell: int, number: int) -> GameState | None:
         game = await self.get_current_game(number, ws)
         if game is not None:
-            state, message = await game.cell_played(cell)
+            state, message, is_active = await game.cell_played(cell)
             return GameState(
+                is_active,
                 state,
                 message,
                 await game.player_1.get_ws(),
@@ -64,7 +65,9 @@ class WSGame(WebSocketBroadcast):
                 self.current_games.remove(game)
             elif game in self.games:
                 self.games.remove(game)
+
             pl1, pl2 = None, None
+
             if game.player_1 is not None:
                 pl1 = await game.player_1.get_ws()
             if game.player_2 is not None:
@@ -110,26 +113,20 @@ class WSGame(WebSocketBroadcast):
 
     async def move(self, websocket: WebSocket, data: Any):
         game = await self.move_game(websocket, data['cell'], data['number'])
-        await game.player_ws1.send_json(
-            {
-                'action': 'move',
-                'cell': data['cell'],
-                'move': True if websocket != game.player_ws1 else False,
-                'state': game.state,
-                'message': game.message
-            }
-        )
-        await game.player_ws2.send_json(
-            {
-                'action': 'move',
-                'cell': data['cell'],
-                'move': True if websocket != game.player_ws2 else False,
-                'state': game.state,
-                'message': game.message
-            }
-        )
+        _data = {
+            'action': 'move',
+            'is_active': game.is_active,
+            'cell': data['cell'],
+            'state': game.state,
+            'message': game.message
+        }
+        _data.update({'move': True if websocket != game.player_ws1 else False})
+        await game.player_ws1.send_json(_data)
 
-    async def close(self, websocket: WebSocket) -> None:
+        _data.update({'move': True if websocket != game.player_ws2 else False})
+        await game.player_ws2.send_json(_data)
+
+    async def close(self, websocket: WebSocket, data: Any | None = None) -> None:
         players_ws = await self.delete_game(websocket)
         if players_ws is not None:
             for ws in players_ws:
@@ -137,5 +134,6 @@ class WSGame(WebSocketBroadcast):
                     await ws.send_json({'action': 'close', 'games': len(self.games)})
 
     async def on_disconnect(self, websocket: WebSocket, close_code: int) -> None:
+        await self.close(websocket, close_code)
         await super().on_disconnect(websocket, close_code)
-        await self.close(websocket)
+

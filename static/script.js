@@ -26,7 +26,7 @@ ws.onmessage = function (event) {
             startGame(data.number, data.player, data.other_player, data.move)
             break
         case 'move':
-            moveGame(data.cell, data.move, data.state, data.message)
+            moveGame(data.is_active, data.cell, data.move, data.state, data.message)
             break
         case 'close':
             closeGame(data.games)
@@ -75,7 +75,7 @@ function startGame(number, player, other_player, move) {
 }
 
 
-function moveGame(cellIndex, move, state, message) {
+function moveGame(is_active, cellIndex, move, state, message) {
     let cellClicked = document.querySelector(`[data-cell-index="${cellIndex}"]`)
     document.querySelector('.game-status').innerHTML = message
     activeGame = move
@@ -86,19 +86,23 @@ function moveGame(cellIndex, move, state, message) {
 
     cellClicked.innerHTML = state
     gameState[cellIndex] = state
+
+    if (!is_active) {
+        activeGame = is_active
+    }
 }
 
 
 function gameList(game) {
     let i = 0
-    if (game === 0) {
+    // if (game === 0) {
         let gameList = document.getElementById('gameList')
         let ch = gameList.lastElementChild
         if (ch) {
             gameList.removeChild(ch)
-            return
+            // return
         }
-    }
+    // }
 
     while (i < game) {
         let gameList = document.getElementById('gameList')
@@ -149,15 +153,18 @@ function showListGames() {
     document.querySelectorAll('.cell').forEach(cell => cell.innerHTML = '')
     gameState = ["", "", "", "", "", "", "", "", ""]
     activeGame = false
+    iPlayer = ''
+
+    // document.querySelector('.game-status').innerHTML = 'Ожидание игрока'
     let state = document.getElementById('player')
-    document.querySelector('.game-status').innerHTML = 'Ожидание игрока'
     state.className = 'game-off'
     state.innerHTML = ''
 }
 
 
-function closeGame() {
+function closeGame(games) {
     showListGames()
+    gameList(games)
     send({action: 'close'})
 }
 

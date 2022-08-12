@@ -4,6 +4,7 @@ from starlette.websockets import WebSocket
 
 
 class GameState(NamedTuple):
+    is_active: bool
     state: str
     message: str
     player_ws1: WebSocket | None

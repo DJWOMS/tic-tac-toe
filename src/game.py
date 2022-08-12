@@ -97,7 +97,7 @@ class Game:
 
     async def cell_played(self, cell_index) -> tuple:
         self.game_state[cell_index] = self.current_player
-        return self.current_player, await self.result_validation()
+        return self.current_player, await self.result_validation(), self.active_game
 
     async def change_current_player(self) -> None:
         self.current_player = "X" if self.current_player != "X" else "O"
