@@ -1,59 +1,9 @@
 from typing import List, Any
 
-from starlette.endpoints import WebSocketEndpoint
 from starlette.websockets import WebSocket
 
 from .game import Game
-
-
-class WebSocketManager:
-    def __init__(self):
-        self.connections: List[WebSocket] = []
-
-    async def connect(self, websocket: WebSocket) -> None:
-        await self.add_connection(websocket)
-
-    async def disconnect(self, websocket: WebSocket) -> None:
-        await self.delete_connection(websocket)
-
-    async def add_connection(self, websocket: WebSocket) -> None:
-        self.connections.append(websocket)
-
-    async def delete_connection(self, websocket: WebSocket) -> None:
-        self.connections.remove(websocket)
-
-    async def send_message(self, websocket: WebSocket, message: dict) -> None:
-        await websocket.send_json(message)
-
-    async def broadcast(self, message: dict) -> None:
-        for connection in self.connections:
-            await connection.send_json(message)
-
-
-class WebSocketActions(WebSocketEndpoint):
-    encoding = 'json'
-    actions: List[str] = []
-
-    async def actions_not_allowed(self, websocket: WebSocket, data: Any) -> None:
-        await websocket.send_json({'action': 'Not found'})
-
-    async def on_receive(self, websocket: WebSocket, data: Any):
-        if data['action'] in self.actions:
-            handler = getattr(self, data['action'], self.actions_not_allowed)
-        else:
-            handler = self.actions_not_allowed
-        return await handler(websocket, data)
-
-
-class WebSocketBroadcast(WebSocketActions):
-    manager = WebSocketManager()
-
-    async def on_connect(self, websocket: WebSocket) -> None:
-        await websocket.accept()
-        await self.manager.connect(websocket)
-
-    async def on_disconnect(self, websocket: WebSocket, close_code: int) -> None:
-        await self.manager.disconnect(websocket)
+from .ws_classes import WebSocketBroadcast
 
 
 class WSGame(WebSocketBroadcast):
@@ -77,7 +27,7 @@ class WSGame(WebSocketBroadcast):
         await game.join_player(ws)
         return game
 
-    async def get_current_game(self, number: int, ws: WebSocket) -> Game:
+    async def get_current_game(self, number: int, ws: WebSocket) -> Game | None:
         try:
             game = self.current_games[number]
         except IndexError:
@@ -86,7 +36,7 @@ class WSGame(WebSocketBroadcast):
             if await game.check_player_ws(ws):
                 return game
 
-    async def get_game(self, ws: WebSocket) -> Game:
+    async def get_game(self, ws: WebSocket) -> Game | None:
         for game in self.current_games:
             if await game.check_player_ws(ws):
                 return game
@@ -94,7 +44,7 @@ class WSGame(WebSocketBroadcast):
             if await game.check_player_ws(ws):
                 return game
 
-    async def move_game(self, ws: WebSocket, cell: int, number: int) -> tuple:
+    async def move_game(self, ws: WebSocket, cell: int, number: int) -> tuple | None:
         game = await self.get_current_game(number, ws)
         if game is not None:
             state, message = await game.cell_played(cell)
@@ -121,10 +71,10 @@ class WSGame(WebSocketBroadcast):
             del game
             return pl1, pl2
 
-    async def new(self, websocket: WebSocket, data: Any):
+    async def new(self, websocket: WebSocket, data: Any) -> None:
         await websocket.send_json({'action': 'new', 'games': len(self.games)})
 
-    async def create(self, websocket: WebSocket, data: Any):
+    async def create(self, websocket: WebSocket, data: Any) -> None:
         game = await self.create_game(websocket)
         await websocket.send_json({
             'action': 'create',
@@ -178,7 +128,7 @@ class WSGame(WebSocketBroadcast):
             }
         )
 
-    async def close(self, websocket: WebSocket):
+    async def close(self, websocket: WebSocket) -> None:
         players_ws = await self.delete_game(websocket)
         if players_ws is not None:
             for ws in players_ws:
