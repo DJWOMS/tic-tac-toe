@@ -1,6 +1,7 @@
 # Крестики-нолики онлайн
 
 ### Инструменты
+- python >= 3.10
 - Starlette
 - WebSockets
 - Uvicorn
