@@ -3,6 +3,7 @@ from typing import List, Any
 from starlette.websockets import WebSocket
 
 from .game import Game
+from .interfaces import GameState, PlayersWebSocket
 from .ws_classes import WebSocketBroadcast
 
 
@@ -44,11 +45,11 @@ class WSGame(WebSocketBroadcast):
             if await game.check_player_ws(ws):
                 return game
 
-    async def move_game(self, ws: WebSocket, cell: int, number: int) -> tuple | None:
+    async def move_game(self, ws: WebSocket, cell: int, number: int) -> GameState | None:
         game = await self.get_current_game(number, ws)
         if game is not None:
             state, message = await game.cell_played(cell)
-            return (
+            return GameState(
                 state,
                 message,
                 await game.player_1.get_ws(),
@@ -56,7 +57,7 @@ class WSGame(WebSocketBroadcast):
             )
         await self.close(ws)
 
-    async def delete_game(self, ws: WebSocket) -> tuple:
+    async def delete_game(self, ws: WebSocket) -> PlayersWebSocket | None:
         game = await self.get_game(ws)
         if game is not None:
             if game in self.current_games:
@@ -69,7 +70,7 @@ class WSGame(WebSocketBroadcast):
             if game.player_2 is not None:
                 pl2 = await game.player_2.get_ws()
             del game
-            return pl1, pl2
+            return PlayersWebSocket(pl1, pl2)
 
     async def new(self, websocket: WebSocket, data: Any) -> None:
         await websocket.send_json({'action': 'new', 'games': len(self.games)})
@@ -108,23 +109,23 @@ class WSGame(WebSocketBroadcast):
         await self.manager.broadcast({'action': 'new', 'games': len(self.games)})
 
     async def move(self, websocket: WebSocket, data: Any):
-        state, message, ws1, ws2 = await self.move_game(websocket, data['cell'], data['number'])
-        await ws1.send_json(
+        game = await self.move_game(websocket, data['cell'], data['number'])
+        await game.player_ws1.send_json(
             {
                 'action': 'move',
                 'cell': data['cell'],
-                'move': True if websocket != ws1 else False,
-                'state': state,
-                'message': message
+                'move': True if websocket != game.player_ws1 else False,
+                'state': game.state,
+                'message': game.message
             }
         )
-        await ws2.send_json(
+        await game.player_ws2.send_json(
             {
                 'action': 'move',
                 'cell': data['cell'],
-                'move': True if websocket != ws2 else False,
-                'state': state,
-                'message': message
+                'move': True if websocket != game.player_ws2 else False,
+                'state': game.state,
+                'message': game.message
             }
         )
 
