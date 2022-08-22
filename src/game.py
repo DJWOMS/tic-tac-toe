@@ -38,27 +38,23 @@ class Game:
     current_player: Literal['X', 'O'] = ''
     active_game: bool = False
 
-    @classmethod
-    async def create(cls, ws: WebSocket, number: int):
-        self = cls()
+    def __init__(self, number):
         self.__number = number
-        player = await self.create_player(ws)
+
+    async def start(self, ws: WebSocket):
+        player = await self.create_player(ws, 'X')
         self.player_1 = player
         self.current_player = await player.get_state()
-        return self
 
-    @property
-    def number(self) -> int:
-        return self.__number
-
-    async def create_player(self, ws: WebSocket) -> Player:
-        return Player(ws, 'X')
-
-    async def join_player(self, ws: WebSocket) -> None:
-        player = Player(ws, 'O')
-        if player != self.player_1 and player != self.player_2:
+    async def join_player(self, ws: WebSocket) -> None | bool:
+        player = await self.create_player(ws, 'O')
+        if player != self.player_1 and self.player_2 is None:
             self.player_2 = player
             self.active_game = True
+            return True
+
+    async def create_player(self, ws: WebSocket, state: Literal['X', 'O']) -> Player:
+        return Player(ws, state)
 
     async def check_player_ws(self, ws: WebSocket) -> bool:
         is_ws = False
@@ -111,10 +107,6 @@ class Game:
     async def move_message(self) -> str:
         return f"Ход игрока {self.current_player}"
 
-
-
-
-
-
-
-
+    @property
+    def number(self) -> int:
+        return self.__number

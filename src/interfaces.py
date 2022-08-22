@@ -2,6 +2,8 @@ from typing import NamedTuple
 
 from starlette.websockets import WebSocket
 
+from src.game import Game
+
 
 class GameState(NamedTuple):
     is_active: bool
@@ -14,3 +16,8 @@ class GameState(NamedTuple):
 class PlayersWebSocket(NamedTuple):
     player_ws1: WebSocket | None
     player_ws2: WebSocket | None
+
+
+class CurrentGame(NamedTuple):
+    key: int
+    game: Game

@@ -31,6 +31,9 @@ ws.onmessage = function (event) {
         case 'close':
             closeGame(data.games)
             break
+        case 'error':
+            errorGame(data.message)
+            break
         default:
             break
     }
@@ -62,7 +65,7 @@ function createdGame(number, state) {
 
 function joinGame(event) {
     let btn = event.target
-    send({action: 'join', game: btn.id})
+    send({action: 'join', game: parseInt(btn.id)})
 }
 
 
@@ -94,20 +97,21 @@ function moveGame(is_active, cellIndex, move, state, message) {
 
 
 function gameList(game) {
+    console.log('g', game)
     let i = 0
     // if (game === 0) {
-        let gameList = document.getElementById('gameList')
-        let ch = gameList.lastElementChild
-        if (ch) {
-            gameList.removeChild(ch)
-            // return
-        }
+    let gameList = document.getElementById('gameList')
+    let ch = gameList.lastElementChild
+    if (ch) {
+        gameList.removeChild(ch)
+        // return
+    }
     // }
 
-    while (i < game) {
+    for (i of game) {
         let gameList = document.getElementById('gameList')
         let li = document.createElement('li')
-        let text = document.createTextNode(`${i + 1} `)
+        let text = document.createTextNode(`${i} `)
         let btn = document.createElement('button')
         btn.id = `${i}`
         btn.innerHTML = 'Подключиться'
@@ -115,7 +119,6 @@ function gameList(game) {
         li.appendChild(text)
         li.appendChild(btn)
         gameList.appendChild(li)
-        i++
     }
 }
 
@@ -132,9 +135,7 @@ function clickCell(event) {
     cell.innerHTML = iPlayer
 
     activeGame = false
-    let data = {action: 'move', number: gameNumber, 'cell': cellIndex}
-    console.log('data', data)
-    send(data)
+    send({action: 'move', number: gameNumber, 'cell': cellIndex})
 }
 
 
@@ -168,6 +169,10 @@ function closeGame(games) {
     send({action: 'close'})
 }
 
+
+function errorGame(message) {
+    alert(message)
+}
 
 document.getElementById('create-game').addEventListener('click', createGame)
 document.getElementById('close-game').addEventListener('click', closeGame)
