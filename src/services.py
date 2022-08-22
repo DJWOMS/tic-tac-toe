@@ -51,7 +51,6 @@ class GameService:
                 await game.player_2.get_ws()
             )
         print('game move close')
-        await self.close(ws)
 
     async def delete_game(self, ws: WebSocket) -> PlayersWebSocket | None:
         if current := await self.get_game(ws):

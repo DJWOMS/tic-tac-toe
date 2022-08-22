@@ -45,22 +45,24 @@ class WSGame(WebSocketBroadcast):
             await websocket.send_json({'action': 'error', 'message': 'The game has been started'})
 
     async def move(self, websocket: WebSocket, data: Any):
-        game = await self.service.move_game(websocket, data['cell'], int(data['number']))
-        print('move', game)
-        _data = {
-            'action': 'move',
-            'is_active': game.is_active,
-            'cell': data['cell'],
-            'state': game.state,
-            'message': game.message,
-            'move': True if websocket != game.player_ws1 else False
-        }
-        print('1', _data)
-        await game.player_ws1.send_json(_data)
+        if game := await self.service.move_game(websocket, data['cell'], int(data['number'])):
+            print('move', game)
+            _data = {
+                'action': 'move',
+                'is_active': game.is_active,
+                'cell': data['cell'],
+                'state': game.state,
+                'message': game.message,
+                'move': True if websocket != game.player_ws1 else False
+            }
+            print('1', _data)
+            await game.player_ws1.send_json(_data)
 
-        _data.update({'move': True if websocket != game.player_ws2 else False})
-        print('2', _data)
-        await game.player_ws2.send_json(_data)
+            _data.update({'move': True if websocket != game.player_ws2 else False})
+            print('2', _data)
+            await game.player_ws2.send_json(_data)
+        else:
+            await self.close(websocket)
 
     async def close(self, websocket: WebSocket, data: Any | None = None) -> None:
         if players_ws := await self.service.delete_game(websocket):
