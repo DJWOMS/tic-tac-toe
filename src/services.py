@@ -3,7 +3,7 @@ from typing import Dict
 from starlette.websockets import WebSocket
 
 from .game import Game
-from .interfaces import GameState, PlayersWebSocket, CurrentGame
+from .interfaces import GameState, PlayersWebSocket, GameInterface
 
 
 class GameService:
@@ -26,22 +26,17 @@ class GameService:
                 return game
 
     async def get_current_game(self, number: int, ws: WebSocket) -> Game | None:
-        print(number, ws)
-        print(self.games.get(number))
-        print(self.games)
         if game := self.games.get(number):
-            print('get_current_game', game)
             if await game.check_player_ws(ws):
                 return game
 
-    async def get_game(self, ws: WebSocket) -> CurrentGame | None:
+    async def search_game(self, ws: WebSocket) -> GameInterface | None:
         for k, game in self.games.items():
             if await game.check_player_ws(ws):
-                return CurrentGame(k, game)
+                return GameInterface(k, game)
 
     async def move_game(self, ws: WebSocket, cell: int, number: int) -> GameState | None:
         if game := await self.get_current_game(number, ws):
-            print('ggg', game)
             state, message, is_active = await game.cell_played(cell)
             return GameState(
                 is_active,
@@ -50,10 +45,9 @@ class GameService:
                 await game.player_1.get_ws(),
                 await game.player_2.get_ws()
             )
-        print('game move close')
 
     async def delete_game(self, ws: WebSocket) -> PlayersWebSocket | None:
-        if current := await self.get_game(ws):
+        if current := await self.search_game(ws):
             pl1, pl2 = None, None
             if pl := current.game.player_1:
                 pl1 = await pl.get_ws()
@@ -61,3 +55,9 @@ class GameService:
                 pl2 = await pl.get_ws()
             self.games.pop(current.key)
             return PlayersWebSocket(pl1, pl2)
+
+    async def get_games(self) -> dict:
+        _games = {}
+        for k, instance in self.games.items():
+            _games[k] = instance.active_game
+        return _games

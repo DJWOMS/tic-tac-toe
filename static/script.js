@@ -96,26 +96,28 @@ function moveGame(is_active, cellIndex, move, state, message) {
 }
 
 
-function gameList(game) {
-    console.log('g', game)
-    let i = 0
-    // if (game === 0) {
+function gameList(games) {
+    console.log('game', games)
     let gameList = document.getElementById('gameList')
     let ch = gameList.lastElementChild
     if (ch) {
         gameList.removeChild(ch)
         // return
     }
-    // }
 
-    for (i of game) {
+    for (let i in games) {
         let gameList = document.getElementById('gameList')
         let li = document.createElement('li')
         let text = document.createTextNode(`${i} `)
         let btn = document.createElement('button')
         btn.id = `${i}`
         btn.innerHTML = 'Подключиться'
-        btn.addEventListener('click', joinGame)
+        if (!games[i]) {
+            btn.addEventListener('click', joinGame)
+        } else {
+            btn.disabled = true
+        }
+
         li.appendChild(text)
         li.appendChild(btn)
         gameList.appendChild(li)

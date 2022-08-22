@@ -18,6 +18,6 @@ class PlayersWebSocket(NamedTuple):
     player_ws2: WebSocket | None
 
 
-class CurrentGame(NamedTuple):
+class GameInterface(NamedTuple):
     key: int
     game: Game
