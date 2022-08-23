@@ -95,15 +95,11 @@ function moveGame(is_active, cellIndex, move, state, message) {
 
 
 function gameList(games) {
-    console.log('game', games)
     let gameList = document.getElementById('gameList')
     let ch = gameList.lastElementChild
     if (ch) {
         gameList.removeChild(ch)
-        // return
     }
-    // for (let i = 0; i < games.length; i++) {
-    //     console.log('i', i, games[i])
     let j = 0
     for (let i in games) {
         let gameList = document.getElementById('gameList')
@@ -170,7 +166,6 @@ function resetGames() {
 
 
 function actionCloseGame(games) {
-    console.log('ggggg', games)
     resetGames()
     gameList(games)
 }
