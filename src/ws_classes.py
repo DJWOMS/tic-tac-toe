@@ -32,6 +32,9 @@ class WebSocketManager:
             if connection not in websocket:
                 await connection.send_json(message)
 
+    async def get_connections_online(self):
+        return len(self.connections)
+
 
 class WebSocketActions(WebSocketEndpoint):
     encoding: str = 'json'
@@ -54,6 +57,12 @@ class WebSocketBroadcast(WebSocketActions):
     async def on_connect(self, websocket: WebSocket) -> None:
         await websocket.accept()
         await self.manager.connect(websocket)
+        await self.manager.broadcast(
+            {'action': 'online', 'count': await self.manager.get_connections_online()}
+        )
 
     async def on_disconnect(self, websocket: WebSocket, close_code: int) -> None:
         await self.manager.disconnect(websocket)
+        await self.manager.broadcast(
+            {'action': 'online', 'count': await self.manager.get_connections_online()}
+        )

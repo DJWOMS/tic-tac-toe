@@ -33,6 +33,9 @@ ws.onmessage = function (event) {
         case 'error':
             errorGame(data.message)
             break
+        case 'online':
+            onlineUsers(data.count)
+            break
         default:
             break
     }
@@ -170,6 +173,7 @@ function actionCloseGame(games) {
     gameList(games)
 }
 
+
 function closeGame() {
     resetGames()
     send({action: 'close'})
@@ -180,19 +184,13 @@ function errorGame(message) {
     alert(message)
 }
 
+
+function onlineUsers(count) {
+    document.getElementById('online').innerHTML = `Online ${count}`
+}
+
 document.getElementById('create-game').addEventListener('click', createGame)
 document.getElementById('close-game').addEventListener('click', closeGame)
 document.querySelectorAll('.cell').forEach(
     cell => cell.addEventListener('click', clickCell)
 )
-
-
-
-
-
-
-
-
-
-
-

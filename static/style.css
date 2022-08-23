@@ -150,3 +150,9 @@ li {
     background-color: firebrick;
     pointer-events: none;
 }
+
+.users-online {
+    padding: 0 10px;
+    text-align: center;
+    color: green;
+}
