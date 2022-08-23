@@ -133,6 +133,7 @@ li {
     background-color: green;
     border: 0;
     align-self: center;
+    width: 139px;
 }
 
 .btn-join:hover {
@@ -143,4 +144,9 @@ li {
 
 .btn-join:active {
     opacity: 0.7;
+}
+
+.btn-join:disabled {
+    background-color: firebrick;
+    pointer-events: none;
 }

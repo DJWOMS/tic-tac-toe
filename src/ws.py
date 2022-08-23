@@ -68,13 +68,16 @@ class WSGame(WebSocketBroadcast):
             await self.close(websocket)
 
     async def close(self, websocket: WebSocket, data: Any | None = None) -> None:
+        exclude_ws = []
+        players_ws = await self.service.delete_game(websocket)
         games = await self.service.get_games()
-        if players_ws := await self.service.delete_game(websocket):
+        if players_ws is not None:
             for ws in players_ws:
                 if ws is not None:
+                    exclude_ws.append(ws)
                     await ws.send_json({'action': 'close', 'games': games})
-        await self.manager.broadcast({'action': 'new', 'games': games})
+        await self.manager.broadcast_exclude(exclude_ws, {'action': 'new', 'games': games})
 
     async def on_disconnect(self, websocket: WebSocket, close_code: int) -> None:
-        await self.close(websocket, close_code)
+        await self.service.delete_game(websocket)
         await super().on_disconnect(websocket, close_code)

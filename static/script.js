@@ -13,7 +13,6 @@ ws.onopen = function (event) {
 
 
 ws.onmessage = function (event) {
-    console.log(event)
     let data = JSON.parse(event.data)
     switch (data.action) {
         case 'new':
@@ -29,7 +28,7 @@ ws.onmessage = function (event) {
             moveGame(data.is_active, data.cell, data.move, data.state, data.message)
             break
         case 'close':
-            closeGame(data.games)
+            actionCloseGame(data.games)
             break
         case 'error':
             errorGame(data.message)
@@ -58,7 +57,6 @@ function createGame() {
 function createdGame(number, state) {
     iPlayer = state
     gameNumber = number
-    console.log(iPlayer, gameNumber)
     newGame()
 }
 
@@ -104,24 +102,29 @@ function gameList(games) {
         gameList.removeChild(ch)
         // return
     }
-
+    // for (let i = 0; i < games.length; i++) {
+    //     console.log('i', i, games[i])
+    let j = 0
     for (let i in games) {
         let gameList = document.getElementById('gameList')
         let li = document.createElement('li')
-        let text = document.createTextNode(`${i} `)
+        let text = document.createTextNode(`${j + 1} `)
         let btn = document.createElement('button')
         btn.id = `${i}`
-        btn.innerHTML = 'Подключиться'
         btn.className = 'btn-join'
+
         if (!games[i]) {
             btn.addEventListener('click', joinGame)
+            btn.innerHTML = 'Подключиться'
         } else {
             btn.disabled = true
+            btn.innerHTML = 'Занято'
         }
 
         li.appendChild(text)
         li.appendChild(btn)
         gameList.appendChild(li)
+        j++
     }
 }
 
@@ -151,7 +154,7 @@ function newGame() {
 }
 
 
-function showListGames() {
+function resetGames() {
     document.getElementById('game').className = 'container-game'
     document.getElementById('tic-tac-toe').className = 'game-off'
     document.querySelectorAll('.cell').forEach(cell => cell.innerHTML = '')
@@ -166,9 +169,14 @@ function showListGames() {
 }
 
 
-function closeGame(games) {
-    showListGames()
+function actionCloseGame(games) {
+    console.log('ggggg', games)
+    resetGames()
     gameList(games)
+}
+
+function closeGame() {
+    resetGames()
     send({action: 'close'})
 }
 
