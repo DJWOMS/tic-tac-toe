@@ -143,7 +143,7 @@ function clickCell(event) {
 
 
 function newGame() {
-    document.getElementById('game').className = 'game-off, container-game'
+    document.getElementById('game').className = 'game-off container-game'
     document.getElementById('tic-tac-toe').className = 'game-on'
     let state = document.getElementById('player')
     state.className = 'game-on'
@@ -152,7 +152,7 @@ function newGame() {
 
 
 function showListGames() {
-    document.getElementById('game').className = 'game-on, container-game'
+    document.getElementById('game').className = 'container-game'
     document.getElementById('tic-tac-toe').className = 'game-off'
     document.querySelectorAll('.cell').forEach(cell => cell.innerHTML = '')
     gameState = ["", "", "", "", "", "", "", "", ""]
