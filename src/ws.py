@@ -19,7 +19,10 @@ class WSGame(WebSocketBroadcast):
             'player': await game.player_1.get_state(),
             'number': game.number
         })
-        await self.manager.broadcast({'action': 'new', 'games': await self.service.get_games()})
+        await self.manager.broadcast_exclude(
+            [websocket],
+            {'action': 'new', 'games': await self.service.get_games()}
+        )
 
     async def join(self, websocket: WebSocket, data: Any):
         if game := await self.service.join_game(websocket, int(data['game'])):
@@ -40,7 +43,10 @@ class WSGame(WebSocketBroadcast):
             })
             await ws.send_json(_data)
 
-            await self.manager.broadcast({'action': 'new', 'games': await self.service.get_games()})
+            await self.manager.broadcast_exclude(
+                [websocket, ws],
+                {'action': 'new', 'games': await self.service.get_games()}
+            )
         else:
             await websocket.send_json({'action': 'error', 'message': 'The game has been started'})
 
