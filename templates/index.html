@@ -6,13 +6,27 @@
   <title>Tic tac toe</title>
 </head>
 <body>
-<div id="game">
-  <h1>Tic tac toe</h1>
-  <h4>Создать новую игру</h4>
-  <button id="create-game">Создать</button>
+<div id="game" class="container-game">
+  <div class="item"></div>
+  <div class="item-title"><h1>Tic tac toe</h1></div>
+  <div class="item"></div>
 
-  <h4>Список игр</h4>
-  <ul id="gameList"></ul>
+  <div></div>
+  <h4>Новая игра</h4>
+  <button id="create-game" class="btn-create-game">Создать</button>
+  <div></div>
+
+  <div class="item"></div>
+  <div class="game-list-title">
+    <h4 class="item-h4">Список игр</h4>
+  </div>
+  <div class="item"></div>
+
+  <div></div>
+  <div class="container-list-game">
+    <ul id="gameList"></ul>
+  </div>
+  <div></div>
 </div>
 
 <h4 id="player" class="game-off"></h4>
