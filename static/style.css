@@ -223,11 +223,16 @@ input[type=text]:focus, input[type=password]:focus, input[type=email]:focus {
     cursor: pointer;
 }
 
-.form-signup {
+.form-signup, .form-login {
     display: grid;
     grid-template-columns: 280px;
     grid-template-rows: 40px 40px 40px 40px 40px;
     width: 300px;
     justify-content: center;
     margin: 40px auto;
+}
+
+
+.btn-signup, .btn-login{
+    width: 100%;
 }
