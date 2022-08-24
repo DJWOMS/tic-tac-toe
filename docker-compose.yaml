@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+
+  webapp:
+    restart: always
+    build: ./
+    container_name: 'tictactoe'
+    volumes:
+      - ./:/app
+    ports: 
+      - "8000:8000"
+    command: >
+      sh -c "uvicorn main:app --reload"
