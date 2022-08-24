@@ -37,6 +37,26 @@ li {
     margin: 0 0 16px 20px;
 }
 
+input[type=text], input[type=password], input[type=email] {
+    border: none;
+    padding: 0;
+    justify-content: end;
+    height: 20px;
+    font-family: monospace;
+    color: #8a2be2;
+    font-size: 19px;
+    line-height: 24px;
+    font-style: italic;
+    background-color: #3cbc8d0d;
+}
+
+input[type=text]:focus, input[type=password]:focus, input[type=email]:focus {
+    border: none;
+    outline: none;
+    background-color: #c0c0c02e;
+}
+
+
 .container {
     display: grid;
     grid-template-columns: repeat(3, auto);
@@ -172,7 +192,7 @@ li {
 }
 
 .modal-content {
-    background-image: linear-gradient(90deg, transparent 80px, #ED82AD 82px, #ED82AD 83px, transparent 83px),
+    background-image: linear-gradient(90deg, transparent 20px, #ED82AD 22px, #ED82AD 23px, transparent 23px),
     linear-gradient(#e9e9e9 1px, transparent 0px),
     linear-gradient(90deg, #e9e9e9 1px, transparent 0px);
     background-size: 100% 100%, 20px 20px, 20px 20px;
@@ -206,9 +226,8 @@ li {
 .form-signup {
     display: grid;
     grid-template-columns: 280px;
-    grid-row-gap: 10px;
     grid-template-rows: 40px 40px 40px 40px 40px;
     width: 300px;
     justify-content: center;
-    margin: 50px auto;
+    margin: 40px auto;
 }
