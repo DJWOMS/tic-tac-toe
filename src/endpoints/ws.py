@@ -1,8 +1,8 @@
 from typing import List, Any
 from starlette.websockets import WebSocket
 
-from .services import GameService
-from .ws_classes import WebSocketBroadcast
+from src.services.game_service import GameService
+from src.ws_classes import WebSocketBroadcast
 
 
 class WSGame(WebSocketBroadcast):

@@ -2,8 +2,8 @@ from typing import Dict
 
 from starlette.websockets import WebSocket
 
-from .game import Game
-from .interfaces import GameState, PlayersWebSocket, GameInterface
+from src.game import Game
+from src.interfaces import GameState, PlayersWebSocket, GameInterface
 
 
 class GameService:

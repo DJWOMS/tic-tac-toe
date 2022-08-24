@@ -7,18 +7,21 @@
 </head>
 <body>
 <div id="game" class="container-game">
-  <div class="item"></div>
+  <div class="item">
+    <button class="btn login">Login</button>
+    <button class="btn signup">Signup</button>
+  </div>
   <div class="item-title"><h1>Tic tac toe</h1></div>
   <div class="item"><p id="online" class="users-online"></p></div>
 
   <div></div>
-  <h4>Новая игра</h4>
-  <button id="create-game" class="btn-create-game">Создать</button>
+  <h4>New game</h4>
+  <button id="create-game" class="btn">Create</button>
   <div></div>
 
   <div class="item"></div>
   <div class="game-list-title">
-    <h4 class="item-h4">Список игр</h4>
+    <h4 class="item-h4">List games</h4>
   </div>
   <div class="item"></div>
 
@@ -44,10 +47,25 @@
     <div data-cell-index="8" class="cell"></div>
   </div>
   <h4 class="game-status"></h4>
-  <button id="close-game">Выйти из игры</button>
+  <button id="close-game">Quit</button>
 </section>
 
 
+<div id="modal-signup" class="modal modal-signup">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <form class="form-signup">
+      <input type="text" name="username" placeholder="name" required>
+      <input type="email" name="email" placeholder="email" required>
+      <input type="password" name="password1" placeholder="password" required>
+      <input type="password" name="password2" placeholder="repeat password" required>
+      <button type="submit" class="btn btn-signup">Signup</button>
+    </form>
+  </div>
+</div>
+
+
 <script src="/static/script.js"></script>
+<script src="/static/modals.js"></script>
 </body>
 </html>

@@ -107,23 +107,23 @@ li {
     display: none;
 }
 
-.btn-create-game {
-    margin: 0 15px 0 0;
+.btn {
+    margin: 10px 15px 0 0;
     color: white;
     background-color: green;
     border: 0;
-    height: 21px;
+    /*height: 21px;*/
     align-self: center;
-    font-size: 16px;
+    /*font-size: 16px;*/
 }
 
-.btn-create-game:hover {
+.btn:hover {
     background-color: greenyellow;
     color: black;
     cursor: pointer;
 }
 
-.btn-create-game:active {
+.btn:active {
     opacity: 0.7;
 }
 
@@ -152,7 +152,63 @@ li {
 }
 
 .users-online {
-    padding: 0 10px;
+    padding: 10px 10px;
     text-align: center;
     color: green;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-image: linear-gradient(90deg, transparent 80px, #ED82AD 82px, #ED82AD 83px, transparent 83px),
+    linear-gradient(#e9e9e9 1px, transparent 0px),
+    linear-gradient(90deg, #e9e9e9 1px, transparent 0px);
+    background-size: 100% 100%, 20px 20px, 20px 20px;
+    background-position: 0 0, -1px -1px, -1px 1px;
+    font-family: monospace;
+    color: #8a2be2;
+    font-size: 19px;
+    line-height: 24px;
+    font-style: italic;
+
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 320px;
+}
+
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover, .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.form-signup {
+    display: grid;
+    grid-template-columns: 280px;
+    grid-row-gap: 10px;
+    grid-template-rows: 40px 40px 40px 40px 40px;
+    width: 300px;
+    justify-content: center;
+    margin: 50px auto;
 }
