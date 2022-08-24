@@ -8,7 +8,7 @@ from .validators import get_password_hash
 from .models import User
 
 
-class UserCRUD:
+class UserService:
     def __init__(self, db_session: Session):
         self.db_session = db_session
 
