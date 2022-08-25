@@ -6,7 +6,7 @@ document.getElementsByClassName("close")[0].addEventListener('click', modalSignu
 document.querySelector(".form-signup").addEventListener('submit', sendFormSignup)
 
 document.querySelector(".login").addEventListener('click', modalLoginOpen)
-document.getElementsByClassName("close")[0].addEventListener('click', modalLoginClose)
+document.getElementsByClassName("close")[1].addEventListener('click', modalLoginClose)
 document.querySelector(".form-login").addEventListener('submit', sendFormLogin)
 
 
@@ -42,7 +42,6 @@ function sendFormSignup(event) {
         data[key] = value;
     });
 
-    console.log('this', data)
     fetch('http://127.0.0.1:8000/signup', {
         method: 'POST',
         mode: 'cors',
@@ -51,9 +50,15 @@ function sendFormSignup(event) {
         },
         body: JSON.stringify(data)
     })
-        .then(response => response.json())
-        .then(response => console.log(response))
-        .catch(error => alert(error))
+        .then(response => {
+            if (response.ok) {
+                alert('Account created')
+                modalSignupClose()
+                return
+            }
+            return Promise.reject(response);
+        })
+        .catch(response => response.json().then(response => alert(response.error)))
 }
 
 function sendFormLogin(event) {
@@ -64,7 +69,6 @@ function sendFormLogin(event) {
         data[key] = value;
     });
 
-    console.log('this', data)
     fetch('http://127.0.0.1:8000/login', {
         method: 'POST',
         mode: 'cors',
@@ -73,7 +77,16 @@ function sendFormLogin(event) {
         },
         body: JSON.stringify(data)
     })
-        .then(response => response.json())
-        .then(response => console.log(response))
-        .catch(error => alert(error))
+        .then(response => {
+            if (response.ok) {
+                return response.json()
+            }
+            return Promise.reject(response);
+        })
+        .then(response => {
+            sessionStorage.setItem('token', response.access_token)
+            sessionStorage.setItem('username', response.username)
+            modalLoginClose()
+        })
+        .catch(response => response.json().then(response => alert(response.error)))
 }

@@ -1,0 +1,3 @@
+SECRET_KEY = "YG*S&*#TY()BOJ0f8y9Y()Hf0h)(HofiPskd)j){US)dhsaON){*DSf9huinbhfe97(&T8"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRES = 60

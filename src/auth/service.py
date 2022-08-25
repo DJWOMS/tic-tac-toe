@@ -16,7 +16,7 @@ async def get_session():
 
 
 class UserService:
-    def __init__(self, db_session: Session):
+    def __init__(self, db_session: Session) -> None:
         self.db_session = db_session
 
     @classmethod
@@ -25,7 +25,7 @@ class UserService:
             async with session.begin():
                 return cls(session)
 
-    async def create_user(self, **kwargs):
+    async def create_user(self, **kwargs) -> User:
         new_user = User(
             name=kwargs.get('username'),
             password=get_password_hash(kwargs.get('password1')),
@@ -48,8 +48,8 @@ class UserService:
         query = await self.db_session.execute(select(User).where(User.name == username))
         return query.scalars().first()
 
-    async def user_exist(self, name: str, email: str) -> bool:
-        query = await self.db_session.execute(select(User).filter(
+    async def user_exist(self, name: str, email: str) -> User:
+        query = await self.db_session.execute(select(User.id).filter(
             or_(User.name == name, User.email == email)
         ))
         return query.scalars().first()
