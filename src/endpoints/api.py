@@ -1,19 +1,16 @@
-import json
-
 from starlette.endpoints import HTTPEndpoint
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 from starlette.templating import Jinja2Templates
 
-from src.auth.service import UserService, get_session
+from src.auth.service import UserService
 from src.auth.tokenizator import create_token
 from src.auth.validators import password_validator, check_password
 
-template = Jinja2Templates(directory='templates')
-
 
 class HomePage(HTTPEndpoint):
-    async def get(self, request: Request) -> template.TemplateResponse:
+    async def get(self, request: Request) -> Jinja2Templates.TemplateResponse:
+        template = Jinja2Templates(directory='templates')
         return template.TemplateResponse('index.html', {'request': request})
 
 

@@ -16,7 +16,6 @@ function start() {
     gameState = ["", "", "", "", "", "", "", "", ""]
 
     if (token && username) {
-
         showLogout()
         hideLoginSignup()
         showUsername(username)
