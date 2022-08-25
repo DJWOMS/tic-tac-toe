@@ -42,17 +42,17 @@ class GameService:
                 is_active,
                 state,
                 message,
-                await game.player_1.get_ws(),
-                await game.player_2.get_ws()
+                game.player_1.ws,
+                game.player_2.ws
             )
 
     async def delete_game(self, ws: WebSocket) -> PlayersWebSocket | None:
         if current := await self.search_game(ws):
             pl1, pl2 = None, None
             if pl := current.game.player_1:
-                pl1 = await pl.get_ws()
+                pl1 = pl.ws
             if pl := current.game.player_2:
-                pl2 = await pl.get_ws()
+                pl2 = pl.ws
             self.games.pop(current.key)
             return PlayersWebSocket(pl1, pl2)
 

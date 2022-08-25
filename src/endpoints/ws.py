@@ -16,7 +16,7 @@ class WSGame(WebSocketBroadcast):
         game = await self.service.create_game(websocket)
         await websocket.send_json({
             'action': 'create',
-            'player': await game.player_1.get_state(),
+            'player': game.player_1.state,
             'number': game.number
         })
         await self.manager.broadcast_exclude(
@@ -29,16 +29,16 @@ class WSGame(WebSocketBroadcast):
             _data = {
                 'action': 'join',
                 'number': game.number,
-                'other_player': await game.player_1.get_state(),
-                'player': await game.player_2.get_state(),
+                'other_player': game.player_1.state,
+                'player': game.player_2.state,
                 'move': False
             }
             await websocket.send_json(_data)
 
-            ws = await game.player_1.get_ws()
+            ws = game.player_1.ws
             _data.update({
-                'other_player': await game.player_2.get_state(),
-                'player': await game.player_1.get_state(),
+                'other_player': game.player_2.state,
+                'player': game.player_1.state,
                 'move': True
             })
             await ws.send_json(_data)
