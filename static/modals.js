@@ -1,5 +1,9 @@
 const modalSignup = document.getElementById("modal-signup")
 const modalLogin = document.getElementById("modal-login")
+const btnLogout = document.querySelector(".logout")
+const spanUsername = document.querySelector(".span-username")
+
+btnLogout.addEventListener('click', logout)
 
 document.querySelector(".signup").addEventListener('click', modalSignupOpen)
 document.getElementsByClassName("close")[0].addEventListener('click', modalSignupClose)
@@ -24,6 +28,32 @@ function modalLoginOpen() {
 
 function modalLoginClose() {
     modalLogin.style.display = "none"
+}
+
+function showLogout() {
+    btnLogout.style.display = "block"
+}
+
+function hideLogout() {
+    btnLogout.style.display = "none"
+}
+
+function showLoginSignup() {
+    document.querySelector(".signup").style.display = "block"
+    document.querySelector(".login").style.display = "block"
+}
+
+function hideLoginSignup() {
+    document.querySelector(".signup").style.display = "none"
+    document.querySelector(".login").style.display = "none"
+}
+
+function showUsername(username) {
+    spanUsername.innerHTML = username
+}
+
+function hideUsername() {
+    spanUsername.innerHTML = ''
 }
 
 window.onclick = function (event) {
@@ -86,7 +116,22 @@ function sendFormLogin(event) {
         .then(response => {
             sessionStorage.setItem('token', response.access_token)
             sessionStorage.setItem('username', response.username)
+            showLogout()
+            hideLoginSignup()
+            showUsername(response.username)
+            closeWS()
+            start()
             modalLoginClose()
         })
         .catch(response => response.json().then(response => alert(response.error)))
+}
+
+function logout() {
+    sessionStorage.removeItem('token')
+    sessionStorage.removeItem('username')
+    hideLogout()
+    hideUsername()
+    showLoginSignup()
+    closeWS()
+    start()
 }

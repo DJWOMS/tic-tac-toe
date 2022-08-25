@@ -46,7 +46,9 @@ class UserService:
 
     async def get_user(self, username: str) -> User:
         query = await self.db_session.execute(select(User).where(User.name == username))
-        return query.scalars().first()
+        user = query.scalars().first()
+        await self.db_session.close()
+        return user
 
     async def user_exist(self, name: str, email: str) -> User:
         query = await self.db_session.execute(select(User.id).filter(
@@ -66,4 +68,4 @@ class UserService:
             query = query.values(draw=draw)
         query.execution_options(synchronize_session="fetch")
         await self.db_session.execute(query)
-        self.db_session.close()
+        await self.db_session.close()

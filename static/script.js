@@ -1,43 +1,66 @@
-const ws = new WebSocket('ws://localhost:8000/ws')
-
-let gameNumber = 0
-let iPlayer = ''
+let ws
+let gameNumber
+let iPlayer
 let otherPlayer
-let activeGame = false
-let gameState = ["", "", "", "", "", "", "", "", ""]
+let activeGame
+let gameState
 
+function start() {
+    let token = sessionStorage.getItem('token')
+    let username = sessionStorage.getItem('username')
 
-ws.onopen = function (event) {
-    newUser()
+    gameNumber = 0
+    iPlayer = ''
+    otherPlayer = ''
+    activeGame = false
+    gameState = ["", "", "", "", "", "", "", "", ""]
+
+    if (token && username) {
+
+        showLogout()
+        hideLoginSignup()
+        showUsername(username)
+
+        ws = new WebSocket(`ws://localhost:8000/ws?token=${token}`)
+        wsFunctions()
+        return
+    }
+    ws = new WebSocket('ws://localhost:8000/ws')
+    wsFunctions()
 }
 
+function wsFunctions() {
+    ws.onopen = function (event) {
+        newUser()
+    }
 
-ws.onmessage = function (event) {
-    let data = JSON.parse(event.data)
-    switch (data.action) {
-        case 'new':
-            gameList(data.games)
-            break
-        case 'create':
-            createdGame(data.number, data.player)
-            break
-        case 'join':
-            startGame(data.number, data.player, data.other_player, data.move)
-            break
-        case 'move':
-            moveGame(data.is_active, data.cell, data.move, data.state, data.message)
-            break
-        case 'close':
-            actionCloseGame(data.games)
-            break
-        case 'error':
-            errorGame(data.message)
-            break
-        case 'online':
-            onlineUsers(data.count)
-            break
-        default:
-            break
+    ws.onmessage = function (event) {
+        let data = JSON.parse(event.data)
+        switch (data.action) {
+            case 'new':
+                gameList(data.games)
+                break
+            case 'create':
+                createdGame(data.number, data.player)
+                break
+            case 'join':
+                startGame(data.number, data.player, data.other_player, data.move)
+                break
+            case 'move':
+                moveGame(data.is_active, data.cell, data.move, data.state, data.message)
+                break
+            case 'close':
+                actionCloseGame(data.games)
+                break
+            case 'error':
+                errorGame(data.message)
+                break
+            case 'online':
+                onlineUsers(data.count)
+                break
+            default:
+                break
+        }
     }
 }
 
@@ -58,6 +81,7 @@ function createGame() {
 
 
 function createdGame(number, state) {
+    console.log(number, state)
     iPlayer = state
     gameNumber = number
     newGame()
@@ -184,6 +208,9 @@ function errorGame(message) {
     alert(message)
 }
 
+function closeWS() {
+    ws.close()
+}
 
 function onlineUsers(count) {
     document.getElementById('online').innerHTML = `Online ${count}`
@@ -194,3 +221,5 @@ document.getElementById('close-game').addEventListener('click', closeGame)
 document.querySelectorAll('.cell').forEach(
     cell => cell.addEventListener('click', clickCell)
 )
+
+start()
