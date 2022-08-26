@@ -50,6 +50,12 @@ class UserService:
         await self.db_session.close()
         return user
 
+    async def filter(self, **kwargs) -> User:
+        query = await self.db_session.execute(select(User).filter_by(**kwargs))
+        user = query.scalars().first()
+        await self.db_session.close()
+        return user
+
     async def user_exist(self, name: str, email: str) -> User:
         query = await self.db_session.execute(select(User.id).filter(
             or_(User.name == name, User.email == email)
