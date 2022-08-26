@@ -6,7 +6,7 @@ from config import settings
 
 def create_token(user_id: int) -> dict:
     token = create_access_token(
-        data={"user_id": user_id}, expires_delta=timedelta(settings.ACCESS_TOKEN_EXPIRES)
+        data={"user_id": user_id}, expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRES)
     )
     return {"access_token": token, "token_type": "Bearer"}
 
