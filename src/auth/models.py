@@ -14,4 +14,12 @@ class User(Base):
     loss = Column(Integer, default=0)
     draw = Column(Integer, default=0)
 
+    @property
+    def is_authenticated(self) -> bool:
+        return True
+
+    @property
+    def display_name(self) -> str:
+        return self.name
+
     __mapper_args__ = {"eager_defaults": True}
