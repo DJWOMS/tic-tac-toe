@@ -17,6 +17,7 @@ function start() {
 
     if (token && username) {
         showLogout()
+        showBtnMyStat()
         hideLoginSignup()
         showUsername(username)
 
@@ -59,6 +60,9 @@ function wsFunctions() {
                 break
             case 'top':
                 topUsers(data.top)
+                break
+            case 'stat':
+                myStat(data.stat)
                 break
             default:
                 break
@@ -236,7 +240,6 @@ function onlineUsers(count) {
 }
 
 function topUsers(top) {
-    console.log('top', top)
     let wrapperTop = document.querySelector('.wrapper-top')
     let j = 1
     for (let user of top) {
@@ -274,6 +277,13 @@ function topUsers(top) {
         wrapperTop.appendChild(divDraw)
         j++
     }
+}
+
+function myStat(myStat) {
+    document.querySelector('.column-username').innerHTML = `${myStat.name}`
+    document.querySelector('.column-win').innerHTML = `${myStat.win}`
+    document.querySelector('.column-lose').innerHTML = `${myStat.lose}`
+    document.querySelector('.column-draw').innerHTML = `${myStat.draw}`
 }
 
 document.getElementById('create-game').addEventListener('click', createGame)

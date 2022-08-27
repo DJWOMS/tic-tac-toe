@@ -6,7 +6,7 @@ from src.ws_classes import WebSocketBroadcast
 
 
 class WSGame(WebSocketBroadcast):
-    actions: List[str] = ['create', 'join', 'new', 'close', 'move']
+    actions: List[str] = ['create', 'join', 'new', 'close', 'move', 'stat']
     service = GameService()
 
     async def new(self, websocket: WebSocket, data: Any) -> None:
@@ -69,6 +69,11 @@ class WSGame(WebSocketBroadcast):
                 await self.manager.broadcast({'action': 'top', 'top': await self.service.get_top()})
         else:
             await self.close(websocket)
+
+    async def stat(self, websocket: WebSocket, data: Any):
+        await websocket.send_json(
+            {'action': 'stat', 'stat': await self.service.get_user_stat(self.scope['user'])}
+        )
 
     async def close(self, websocket: WebSocket, data: Any | None = None) -> None:
         exclude_ws = []

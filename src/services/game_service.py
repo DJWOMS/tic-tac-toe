@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 
 from starlette.websockets import WebSocket
 
@@ -16,9 +16,9 @@ class GameService:
         self.games[self.__number_last_game] = game
         self.__number_last_game += 1
 
-    async def create_game(self, ws: WebSocket, user: User) -> Game:
+    async def create_game(self, ws: WebSocket, current_user: User) -> Game:
         game = Game(self.__number_last_game)
-        await game.start(ws, user)
+        await game.start(ws, current_user)
         await self.set_last_game(game)
         return game
 
@@ -75,15 +75,20 @@ class GameService:
         await user.update_user(username_2, draw=1)
         await user.db_session.close()
 
-    async def get_top(self):
+    async def get_top(self) -> List[dict]:
         _top_list = []
-        top = await UserService.ainit()
-        user_list = await top.get_top_users()
+        session = await UserService.ainit()
+        user_list = await session.get_top_users()
         for user in user_list:
             _top_list.append(
                 {'name': user.name, 'win': user.win, 'lose': user.loss, 'draw': user.draw}
             )
         return _top_list
+
+    async def get_user_stat(self, current_user: User) -> dict:
+        session = await UserService.ainit()
+        user = await session.get_user(current_user.display_name)
+        return {'name': user.name, 'win': user.win, 'lose': user.loss, 'draw': user.draw}
 
     async def get_games(self) -> dict:
         _games = {}

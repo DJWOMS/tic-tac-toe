@@ -5,6 +5,7 @@ const modalMyStat = document.getElementById("modal-myStat")
 
 const btnLogout = document.querySelector(".logout")
 const spanUsername = document.querySelector(".span-username")
+const btnMyStat = document.querySelector(".btn-myStat")
 
 btnLogout.addEventListener('click', logout)
 
@@ -19,8 +20,10 @@ document.querySelector(".form-login").addEventListener('submit', sendFormLogin)
 document.querySelector(".btn-top").addEventListener('click', modalTopOpen)
 document.querySelector(".close-top").addEventListener('click', modalTopClose)
 
-document.querySelector(".btn-myStat").addEventListener('click', modalMyStatOpen)
+
+btnMyStat.addEventListener('click', modalMyStatOpen)
 document.querySelector(".close-myStat").addEventListener('click', modalMyStatClose)
+
 
 function modalSignupOpen() {
     modalSignup.style.display = "block"
@@ -47,6 +50,7 @@ function modalTopClose() {
 
 function modalMyStatOpen() {
     modalMyStat.style.display = 'block'
+    send({action: 'stat'})
 }
 
 function modalMyStatClose() {
@@ -77,6 +81,14 @@ function showUsername(username) {
 
 function hideUsername() {
     spanUsername.innerHTML = ''
+}
+
+function showBtnMyStat() {
+    btnMyStat.style.display = "block"
+}
+
+function hideBtnMyStat() {
+    btnMyStat.style.display = "none"
 }
 
 window.onclick = function (event) {
@@ -151,6 +163,7 @@ function sendFormLogin(event) {
             sessionStorage.setItem('token', response.access_token)
             sessionStorage.setItem('username', response.username)
             showLogout()
+            showBtnMyStat()
             hideLoginSignup()
             showUsername(response.username)
             closeWS()
@@ -164,6 +177,7 @@ function logout() {
     sessionStorage.removeItem('token')
     sessionStorage.removeItem('username')
     hideLogout()
+    hideBtnMyStat()
     hideUsername()
     showLoginSignup()
     closeWS()
