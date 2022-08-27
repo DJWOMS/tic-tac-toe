@@ -37,18 +37,6 @@ class GameService:
             if await game.check_player_ws(ws):
                 return GameInterface(k, game)
 
-    async def set_win(self, username_win: str, username_loss: str) -> None:
-        user = await UserService.ainit()
-        await user.update_user(username_win, win=1)
-        await user.update_user(username_loss, loss=1)
-        await user.db_session.close()
-
-    async def set_draw(self, username_1: str, username_2: str) -> None:
-        user = await UserService.ainit()
-        await user.update_user(username_1, draw=1)
-        await user.update_user(username_2, draw=1)
-        await user.db_session.close()
-
     async def move_game(self, ws: WebSocket, cell: int, number: int) -> GameState | None:
         if current_game := await self.get_current_game(number, ws):
             game = current_game.cell_played(cell)
@@ -74,6 +62,28 @@ class GameService:
                 pl2 = pl.ws
             self.games.pop(current.key)
             return PlayersWebSocket(pl1, pl2)
+
+    async def set_win(self, username_win: str, username_loss: str) -> None:
+        user = await UserService.ainit()
+        await user.update_user(username_win, win=1)
+        await user.update_user(username_loss, loss=1)
+        await user.db_session.close()
+
+    async def set_draw(self, username_1: str, username_2: str) -> None:
+        user = await UserService.ainit()
+        await user.update_user(username_1, draw=1)
+        await user.update_user(username_2, draw=1)
+        await user.db_session.close()
+
+    async def get_top(self):
+        _top_list = []
+        top = await UserService.ainit()
+        user_list = await top.get_top_users()
+        for user in user_list:
+            _top_list.append(
+                {'name': user.name, 'win': user.win, 'lose': user.loss, 'draw': user.draw}
+            )
+        return _top_list
 
     async def get_games(self) -> dict:
         _games = {}

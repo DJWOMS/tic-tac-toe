@@ -11,6 +11,7 @@ class WSGame(WebSocketBroadcast):
 
     async def new(self, websocket: WebSocket, data: Any) -> None:
         await websocket.send_json({'action': 'new', 'games': await self.service.get_games()})
+        await self.manager.broadcast({'action': 'top', 'top': await self.service.get_top()})
 
     async def create(self, websocket: WebSocket, data: Any) -> None:
         game = await self.service.create_game(websocket, self.scope['user'])
@@ -63,6 +64,9 @@ class WSGame(WebSocketBroadcast):
 
             _data.update({'move': True if websocket != game.player_ws2 else False})
             await game.player_ws2.send_json(_data)
+
+            if not game.is_active:
+                await self.manager.broadcast({'action': 'top', 'top': await self.service.get_top()})
         else:
             await self.close(websocket)
 

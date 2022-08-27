@@ -1,5 +1,7 @@
 const modalSignup = document.getElementById("modal-signup")
 const modalLogin = document.getElementById("modal-login")
+const modalTop = document.getElementById("modal-top")
+
 const btnLogout = document.querySelector(".logout")
 const spanUsername = document.querySelector(".span-username")
 
@@ -13,6 +15,8 @@ document.querySelector(".login").addEventListener('click', modalLoginOpen)
 document.getElementsByClassName("close")[1].addEventListener('click', modalLoginClose)
 document.querySelector(".form-login").addEventListener('submit', sendFormLogin)
 
+document.querySelector(".btn-top").addEventListener('click', modalTopOpen)
+document.querySelector(".close-top").addEventListener('click', modalTopClose)
 
 function modalSignupOpen() {
     modalSignup.style.display = "block"
@@ -28,6 +32,10 @@ function modalLoginOpen() {
 
 function modalLoginClose() {
     modalLogin.style.display = "none"
+}
+
+function modalTopClose() {
+    modalTop.style.display = "none"
 }
 
 function showLogout() {
@@ -61,6 +69,8 @@ window.onclick = function (event) {
         modalSignup.style.display = "none"
     } else if (event.target === modalLogin) {
         modalLogin.style.display = "none"
+    } else if (event.target === modalTop) {
+        modalTop.style.display = "none"
     }
 }
 
@@ -134,4 +144,10 @@ function logout() {
     showLoginSignup()
     closeWS()
     start()
+}
+
+function modalTopOpen() {
+
+
+    modalTop.style.display = 'block'
 }

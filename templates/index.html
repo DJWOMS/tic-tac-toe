@@ -16,7 +16,9 @@
   <div class="item-title"><h1>Tic tac toe</h1></div>
   <div class="item"><p id="online" class="users-online"></p></div>
 
-  <div></div>
+  <div>
+    <button type="submit" class="btn btn-top">Top 10</button>
+  </div>
   <h4>New game</h4>
   <button id="create-game" class="btn">Create</button>
   <div></div>
@@ -54,7 +56,7 @@
 
 
 <div id="modal-signup" class="modal modal-signup">
-  <div class="modal-content">
+  <div class="modal-content auth">
     <span class="close">&times;</span>
     <form class="form-signup">
       <input type="text" name="username" placeholder="Name" required>
@@ -67,13 +69,26 @@
 </div>
 
 <div id="modal-login" class="modal modal-login">
-  <div class="modal-content">
+  <div class="modal-content auth">
     <span class="close">&times;</span>
     <form class="form-login">
       <input type="text" name="username" placeholder="Name" required>
       <input type="password" name="password" placeholder="Password" required>
       <button type="submit" class="btn btn-login">Login</button>
     </form>
+  </div>
+</div>
+
+<div id="modal-top" class="modal">
+  <div class="modal-content modal-top">
+    <span class="close close-top">&times;</span>
+    <div class="wrapper-top">
+      <div class="column">Num</div>
+      <div class="column">User name</div>
+      <div class="column">Win</div>
+      <div class="column">Lose</div>
+      <div class="column">Draw</div>
+    </div>
   </div>
 </div>
 

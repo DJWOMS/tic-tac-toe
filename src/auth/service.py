@@ -41,8 +41,10 @@ class UserService:
         return query.scalars().all()
 
     async def get_top_users(self) -> List[User]:
-        query = await self.db_session.execute(select(User).order_by(User.win))
-        return query.scalars().limit(10).all()
+        query = await self.db_session.execute(select(User).order_by(User.win.desc()).limit(10))
+        top = query.scalars().all()
+        await self.db_session.close()
+        return top
 
     async def get_user(self, username: str) -> User:
         query = await self.db_session.execute(select(User).where(User.name == username))

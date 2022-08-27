@@ -57,6 +57,9 @@ function wsFunctions() {
             case 'online':
                 onlineUsers(data.count)
                 break
+            case 'top':
+                topUsers(data.top)
+                break
             default:
                 break
         }
@@ -108,7 +111,6 @@ function startGame(number, player, other_player, move) {
             To you join the player ${otherPlayer.username} - ${otherPlayer.state}`
         )
     }
-    // changeGameStatusMessage(`To you join the player ${otherPlayer.username} - ${otherPlayer.state}`)
     newGame(move)
 }
 
@@ -139,12 +141,11 @@ function gameList(games) {
     }
     let j = 0
     for (let i in games) {
-        console.log(games[i].creator)
         let gameList = document.getElementById('gameList')
         let li = document.createElement('li')
         let text = document.createTextNode(`${j + 1} `)
-        let div = document.createElement('span')
-        div.innerHTML = games[i].creator
+        let span = document.createElement('span')
+        span.innerHTML = games[i].creator
         let btn = document.createElement('button')
         btn.id = `${i}`
         btn.className = 'btn-join'
@@ -158,7 +159,7 @@ function gameList(games) {
         }
 
         li.appendChild(text)
-        li.appendChild(div)
+        li.appendChild(span)
         li.appendChild(btn)
         gameList.appendChild(li)
         j++
@@ -232,6 +233,47 @@ function closeWS() {
 
 function onlineUsers(count) {
     document.getElementById('online').innerHTML = `Online ${count}`
+}
+
+function topUsers(top) {
+    console.log('top', top)
+    let wrapperTop = document.querySelector('.wrapper-top')
+    let j = 1
+    for (let user of top) {
+        console.log('user', user)
+        console.log('user.name', user.name)
+        let divId = document.createElement('div')
+        let text = document.createTextNode(`${j}`)
+        divId.className = 'column'
+        divId.appendChild(text)
+
+        let divUser = document.createElement('div')
+        text = document.createTextNode(`${user.name}`)
+        divUser.className = 'column'
+        divUser.appendChild(text)
+
+        let divWin = document.createElement('div')
+        text = document.createTextNode(`${user.win}`)
+        divWin.className = 'column'
+        divWin.appendChild(text)
+
+        let divLose = document.createElement('div')
+        text = document.createTextNode(`${user.lose}`)
+        divLose.className = 'column'
+        divLose.appendChild(text)
+
+        let divDraw = document.createElement('div')
+        text = document.createTextNode(`${user.draw}`)
+        divDraw.className = 'column'
+        divDraw.appendChild(text)
+
+        wrapperTop.appendChild(divId)
+        wrapperTop.appendChild(divUser)
+        wrapperTop.appendChild(divWin)
+        wrapperTop.appendChild(divLose)
+        wrapperTop.appendChild(divDraw)
+        j++
+    }
 }
 
 document.getElementById('create-game').addEventListener('click', createGame)
