@@ -4,17 +4,18 @@ from starlette.middleware import Middleware
 from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.cors import CORSMiddleware
 
+from config import settings
 from config.db import engine, Base
 from src.middleware import JwtWebSocketsAuthMiddleware
 from src.routes import routes
 
 
 app = Starlette(
-    debug=True,
+    debug=settings.DEBUG,
     routes=routes,
     middleware=[
         Middleware(AuthenticationMiddleware, backend=JwtWebSocketsAuthMiddleware()),
-        Middleware(CORSMiddleware, allow_origins=['http://127.0.0.1:8000'])
+        Middleware(CORSMiddleware, allow_origins=settings.CORS_ALLOWED_HOSTS)
     ]
 )
 
@@ -26,4 +27,4 @@ async def startup():
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host='0.0.0.0', port=80001)
+    uvicorn.run(app, host='0.0.0.0', port=8000)
