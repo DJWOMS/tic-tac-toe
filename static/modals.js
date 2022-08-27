@@ -1,6 +1,7 @@
 const modalSignup = document.getElementById("modal-signup")
 const modalLogin = document.getElementById("modal-login")
 const modalTop = document.getElementById("modal-top")
+const modalMyStat = document.getElementById("modal-myStat")
 
 const btnLogout = document.querySelector(".logout")
 const spanUsername = document.querySelector(".span-username")
@@ -18,6 +19,9 @@ document.querySelector(".form-login").addEventListener('submit', sendFormLogin)
 document.querySelector(".btn-top").addEventListener('click', modalTopOpen)
 document.querySelector(".close-top").addEventListener('click', modalTopClose)
 
+document.querySelector(".btn-myStat").addEventListener('click', modalMyStatOpen)
+document.querySelector(".close-myStat").addEventListener('click', modalMyStatClose)
+
 function modalSignupOpen() {
     modalSignup.style.display = "block"
 }
@@ -33,9 +37,20 @@ function modalLoginOpen() {
 function modalLoginClose() {
     modalLogin.style.display = "none"
 }
+function modalTopOpen() {
+    modalTop.style.display = 'block'
+}
 
 function modalTopClose() {
     modalTop.style.display = "none"
+}
+
+function modalMyStatOpen() {
+    modalMyStat.style.display = 'block'
+}
+
+function modalMyStatClose() {
+    modalMyStat.style.display = "none"
 }
 
 function showLogout() {
@@ -65,12 +80,21 @@ function hideUsername() {
 }
 
 window.onclick = function (event) {
-    if (event.target === modalSignup) {
-        modalSignup.style.display = "none"
-    } else if (event.target === modalLogin) {
-        modalLogin.style.display = "none"
-    } else if (event.target === modalTop) {
-        modalTop.style.display = "none"
+    switch (event.target) {
+        case modalSignup:
+            modalSignup.style.display = "none"
+            break
+        case modalLogin:
+            modalLogin.style.display = "none"
+            break
+        case modalTop:
+            modalTop.style.display = "none"
+            break
+        case modalMyStat:
+            modalMyStat.style.display = "none"
+            break
+        default:
+            break
     }
 }
 
@@ -144,10 +168,4 @@ function logout() {
     showLoginSignup()
     closeWS()
     start()
-}
-
-function modalTopOpen() {
-
-
-    modalTop.style.display = 'block'
 }

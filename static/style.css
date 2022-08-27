@@ -249,7 +249,12 @@ input[type=text]:focus, input[type=password]:focus, input[type=email]:focus {
     margin-top: 16px;
 }
 
-.modal-top {
+.btn-myStat {
+    width: 90px;
+    margin-top: 16px;;
+}
+
+.modal-top, .modal-myStat {
     width: 520px;
 }
 
@@ -258,6 +263,13 @@ input[type=text]:focus, input[type=password]:focus, input[type=email]:focus {
     margin: 0 0 0 20px;
     grid-template-columns: 60px 200px 60px 60px 60px;
     grid-template-rows: repeat(10, 40px);
+}
+
+.wrapper-myStat {
+    display: grid;
+    margin: 0 0 0 20px;
+    grid-template-columns: 60px 200px 60px 60px 60px;
+    grid-template-rows: repeat(2, 40px);
 }
 
 .column {
