@@ -33,7 +33,7 @@ class UserService:
         )
         self.db_session.add(new_user)
         await self.db_session.commit()
-        self.db_session.close()
+        await self.db_session.close()
         return new_user
 
     async def get_all_users(self) -> List[User]:
@@ -62,16 +62,13 @@ class UserService:
         ))
         return query.scalars().first()
 
-    async def update_user(
-            self, user_id: int, win: Optional[str], loss: Optional[str], draw: Optional[int]
-    ) -> None:
-        query = update(User).where(User.id == user_id)
-        if win:
-            query = query.values(win=win)
-        if loss:
-            query = query.values(loss=loss)
-        if draw:
-            query = query.values(draw=draw)
-        query.execution_options(synchronize_session="fetch")
-        await self.db_session.execute(query)
-        await self.db_session.close()
+    async def update_user(self, name: str, win: int = 0, loss: int = 0, draw: int = 0) -> None:
+        if name:
+            query = update(User).where(User.name == name).values(
+                win=User.win + win,
+                loss=User.loss + loss,
+                draw=User.draw + draw
+            )
+            query.execution_options(synchronize_session="fetch")
+            await self.db_session.execute(query)
+            await self.db_session.commit()

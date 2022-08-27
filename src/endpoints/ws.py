@@ -13,11 +13,11 @@ class WSGame(WebSocketBroadcast):
         await websocket.send_json({'action': 'new', 'games': await self.service.get_games()})
 
     async def create(self, websocket: WebSocket, data: Any) -> None:
-        game = await self.service.create_game(websocket)
+        game = await self.service.create_game(websocket, self.scope['user'])
         await websocket.send_json({
             'action': 'create',
-            'player': game.player_1.state,
-            'number': game.number
+            'player': {'username': game.player_1.username, 'state': game.player_1.state},
+            'number': game.number,
         })
         await self.manager.broadcast_exclude(
             [websocket],
@@ -25,26 +25,25 @@ class WSGame(WebSocketBroadcast):
         )
 
     async def join(self, websocket: WebSocket, data: Any):
-        if game := await self.service.join_game(websocket, int(data['game'])):
+        if game := await self.service.join_game(websocket, int(data['game']), self.scope['user']):
             _data = {
                 'action': 'join',
                 'number': game.number,
-                'other_player': game.player_1.state,
-                'player': game.player_2.state,
-                'move': False
+                'other_player': {'username': game.player_1.username, 'state': game.player_1.state},
+                'player': {'username': game.player_2.username, 'state': game.player_2.state},
+                'move': False,
             }
             await websocket.send_json(_data)
 
-            ws = game.player_1.ws
             _data.update({
-                'other_player': game.player_2.state,
-                'player': game.player_1.state,
+                'other_player': {'username': game.player_2.username, 'state': game.player_2.state},
+                'player': {'username': game.player_1.username, 'state': game.player_1.state},
                 'move': True
             })
-            await ws.send_json(_data)
+            await game.player_1.ws.send_json(_data)
 
             await self.manager.broadcast_exclude(
-                [websocket, ws],
+                [websocket, game.player_1.ws],
                 {'action': 'new', 'games': await self.service.get_games()}
             )
         else:

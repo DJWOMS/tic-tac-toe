@@ -148,12 +148,12 @@ input[type=text]:focus, input[type=password]:focus, input[type=email]:focus {
 }
 
 .btn-join {
-    margin: 0 10px 0 70px;
+    margin: 0 10px 0 40px;
     color: white;
     background-color: green;
     border: 0;
     align-self: center;
-    width: 139px;
+    width: 100px;
 }
 
 .btn-join:hover {

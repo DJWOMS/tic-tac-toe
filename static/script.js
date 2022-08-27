@@ -10,8 +10,8 @@ function start() {
     let username = sessionStorage.getItem('username')
 
     gameNumber = 0
-    iPlayer = ''
-    otherPlayer = ''
+    iPlayer = {}
+    otherPlayer = {}
     activeGame = false
     gameState = ["", "", "", "", "", "", "", "", ""]
 
@@ -79,10 +79,11 @@ function createGame() {
 }
 
 
-function createdGame(number, state) {
-    console.log(number, state)
-    iPlayer = state
+function createdGame(number, player) {
+    console.log(number, player)
+    iPlayer = player
     gameNumber = number
+    changeGameStatusMessage('Waiting for another player...')
     newGame()
 }
 
@@ -94,17 +95,27 @@ function joinGame(event) {
 
 
 function startGame(number, player, other_player, move) {
+    console.log(number, player, other_player, move)
     iPlayer = player
     otherPlayer = other_player
     activeGame = move
     gameNumber = number
-    newGame()
+    if (move) {
+        changeGameStatusMessage(`Your turn. To you join the player ${otherPlayer.username} - ${otherPlayer.state}`)
+    } else {
+        changeGameStatusMessage(
+            `Player turn ${otherPlayer.state}. 
+            To you join the player ${otherPlayer.username} - ${otherPlayer.state}`
+        )
+    }
+    // changeGameStatusMessage(`To you join the player ${otherPlayer.username} - ${otherPlayer.state}`)
+    newGame(move)
 }
 
 
 function moveGame(is_active, cellIndex, move, state, message) {
     let cellClicked = document.querySelector(`[data-cell-index="${cellIndex}"]`)
-    document.querySelector('.game-status').innerHTML = message
+    changeGameStatusMessage(message)
     activeGame = move
 
     if (!activeGame || gameState[cellIndex] !== "") {
@@ -128,22 +139,26 @@ function gameList(games) {
     }
     let j = 0
     for (let i in games) {
+        console.log(games[i].creator)
         let gameList = document.getElementById('gameList')
         let li = document.createElement('li')
         let text = document.createTextNode(`${j + 1} `)
+        let div = document.createElement('span')
+        div.innerHTML = games[i].creator
         let btn = document.createElement('button')
         btn.id = `${i}`
         btn.className = 'btn-join'
 
-        if (!games[i]) {
+        if (!games[i].isActive) {
             btn.addEventListener('click', joinGame)
-            btn.innerHTML = 'Подключиться'
+            btn.innerHTML = 'Join'
         } else {
             btn.disabled = true
-            btn.innerHTML = 'Занято'
+            btn.innerHTML = 'Close'
         }
 
         li.appendChild(text)
+        li.appendChild(div)
         li.appendChild(btn)
         gameList.appendChild(li)
         j++
@@ -159,8 +174,8 @@ function clickCell(event) {
         return
     }
 
-    gameState[cellIndex] = iPlayer
-    cell.innerHTML = iPlayer
+    gameState[cellIndex] = iPlayer.state
+    cell.innerHTML = iPlayer.state
 
     activeGame = false
     send({action: 'move', number: gameNumber, 'cell': cellIndex})
@@ -170,9 +185,9 @@ function clickCell(event) {
 function newGame() {
     document.getElementById('game').className = 'game-off container-game'
     document.getElementById('tic-tac-toe').className = 'game-on'
-    let state = document.getElementById('player')
-    state.className = 'game-on'
-    state.innerHTML = `Вы игрок ${iPlayer}`
+    let playerState = document.getElementById('player')
+    playerState.className = 'game-on'
+    playerState.innerHTML = `You are ${iPlayer.state}`
 }
 
 
@@ -182,18 +197,22 @@ function resetGames() {
     document.querySelectorAll('.cell').forEach(cell => cell.innerHTML = '')
     gameState = ["", "", "", "", "", "", "", "", ""]
     activeGame = false
-    iPlayer = ''
+    iPlayer = {}
 
-    // document.querySelector('.game-status').innerHTML = 'Ожидание игрока'
     let state = document.getElementById('player')
     state.className = 'game-off'
     state.innerHTML = ''
 }
 
 
+function changeGameStatusMessage(message) {
+    document.querySelector('.game-status').innerHTML = message
+}
+
 function actionCloseGame(games) {
     resetGames()
     gameList(games)
+    send({action: 'close'})
 }
 
 
