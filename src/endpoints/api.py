@@ -3,6 +3,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 from starlette.templating import Jinja2Templates
 
+from src.auth.auth import get_user
 from src.auth.service import UserService
 from src.auth.tokenizator import create_token
 from src.auth.validators import password_validator, check_password
@@ -36,3 +37,11 @@ class Login(HTTPEndpoint):
                 token.update({'username': user.name})
                 return JSONResponse(token)
         return JSONResponse({'error': 'Wrong password or username'}, status_code=400)
+
+
+class CheckToken(HTTPEndpoint):
+    async def post(self, request: Request) -> JSONResponse:
+        data = await request.json()
+        if user := await get_user(data.get('token')):
+            return JSONResponse({'status': 'ok', 'username': user.name})
+        return JSONResponse({}, status_code=400)

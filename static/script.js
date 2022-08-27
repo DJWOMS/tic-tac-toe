@@ -6,6 +6,7 @@ let activeGame
 let gameState
 
 function start() {
+    checkToken()
     let token = sessionStorage.getItem('token')
     let username = sessionStorage.getItem('username')
 
@@ -283,6 +284,33 @@ function myStat(myStat) {
     document.querySelector('.column-win').innerHTML = `${myStat.win}`
     document.querySelector('.column-lose').innerHTML = `${myStat.lose}`
     document.querySelector('.column-draw').innerHTML = `${myStat.draw}`
+}
+
+
+function checkToken() {
+    fetch('http://127.0.0.1:8000/check', {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({token: sessionStorage.getItem('token')})
+    })
+        .then(response => {
+            if (response.ok) {
+                return response.json()
+            }
+            return Promise.reject(response);
+        })
+        .then(response => sessionStorage.setItem('username', response.username))
+        .catch(response => response.json().then(response => {
+            sessionStorage.removeItem('token')
+            sessionStorage.removeItem('username')
+            hideLogout()
+            hideBtnMyStat()
+            hideUsername()
+            showLoginSignup()
+        }))
 }
 
 document.getElementById('create-game').addEventListener('click', createGame)
