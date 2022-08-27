@@ -87,7 +87,6 @@ function createGame() {
 
 
 function createdGame(number, player) {
-    console.log(number, player)
     iPlayer = player
     gameNumber = number
     changeGameStatusMessage('Waiting for another player...')
@@ -102,7 +101,6 @@ function joinGame(event) {
 
 
 function startGame(number, player, other_player, move) {
-    console.log(number, player, other_player, move)
     iPlayer = player
     otherPlayer = other_player
     activeGame = move
@@ -241,10 +239,11 @@ function onlineUsers(count) {
 
 function topUsers(top) {
     let wrapperTop = document.querySelector('.wrapper-top')
+    while (wrapperTop.firstChild) {
+        wrapperTop.removeChild(wrapperTop.firstChild);
+    }
     let j = 1
     for (let user of top) {
-        console.log('user', user)
-        console.log('user.name', user.name)
         let divId = document.createElement('div')
         let text = document.createTextNode(`${j}`)
         divId.className = 'column'
