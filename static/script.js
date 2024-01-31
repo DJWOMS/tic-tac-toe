@@ -22,11 +22,11 @@ function start() {
         hideLoginSignup()
         showUsername(username)
 
-        ws = new WebSocket(`ws://31.31.199.57/ws?token=${token}`)
+        ws = new WebSocket(`ws://${location.host}/ws?token=${token}`)
         wsFunctions()
         return
     }
-    ws = new WebSocket('ws://31.31.199.57/ws')
+    ws = new WebSocket(`ws://${location.host}/ws`)
     wsFunctions()
 }
 
@@ -288,7 +288,7 @@ function myStat(myStat) {
 
 
 function checkToken() {
-    fetch('http://31.31.199.57/check', {
+    fetch(`http://${location.host}/check`, {
         method: 'POST',
         mode: 'cors',
         headers: {

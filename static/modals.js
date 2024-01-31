@@ -118,7 +118,7 @@ function sendFormSignup(event) {
         data[key] = value;
     });
 
-    fetch('http://31.31.199.57/signup', {
+    fetch(`http://${location.host}/signup`, {
         method: 'POST',
         mode: 'cors',
         headers: {
@@ -145,7 +145,7 @@ function sendFormLogin(event) {
         data[key] = value;
     });
 
-    fetch('http://31.31.199.57/login', {
+    fetch(`http://${location.host}/login`, {
         method: 'POST',
         mode: 'cors',
         headers: {
