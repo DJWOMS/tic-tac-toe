@@ -9,7 +9,7 @@ idea
 
 dist
 db.sqlite3
-sqlite.db
+*.db
 venv
 
 __pycache__/

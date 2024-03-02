@@ -15,4 +15,3 @@ class JwtWebSocketsAuthMiddleware(AuthenticationBackend):
         if token := conn.query_params.get('token'):
             if user := await get_user(token):
                 return AuthCredentials(["authenticated"]), user
-
